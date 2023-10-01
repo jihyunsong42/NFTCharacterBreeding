@@ -1,27 +1,26 @@
-import { ethers } from "hardhat";
+const { ethers } = require("hardhat");
+import ContractABI from '../artifacts/contracts/NFTBreeding.sol/NFTBreeding.json';
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const NFTBreeding = await ethers.getContractFactory("NFTBreeding");
+  const nftBreeding = await NFTBreeding.deploy();
 
-  const lockedAmount = ethers.parseEther("0.001");
+  // console.log(await nftBreeding.isOwner());
+  
+  // const provider = new ethers.JsonRpcProvider('https://arb-goerli.g.alchemy.com/v2/E4VcLohsWAkBjxxPapK278zKQLXzlQ1W');
+  // const contractAddress = '0x08a9207e9A71c4A52d10cCa9180e76690537E996';
+  // const contract = new ethers.Contract(contractAddress, ContractABI.abi, provider);
+  // console.log(contract);
+  // await contract.getOwner();
+  await nftBreeding.createNFT(1);
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+  // console.log("NFTCombiner deployed to:", nftBreeding.address);
+  // console.log(nftBreeding);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
